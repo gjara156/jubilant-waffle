@@ -1,0 +1,33 @@
+services:
+  toolbox-for-firefly-iii:
+    image: ghcr.io/xenolphthalein/toolbox-for-firefly-iii:latest
+    container_name: toolbox-for-firefly-iii
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3001:3000"
+    environment:
+      - AUTH_METHODS=basic
+      - AUTH_BASIC_USERNAME=${AUTH_BASIC_USERNAME}
+      - AUTH_BASIC_PASSWORD=${AUTH_BASIC_PASSWORD}
+      - AUTH_SESSION_SECRET=${AUTH_SESSION_SECRET}
+      - FIREFLY_API_URL=${FIREFLY_API_URL}
+      - FIREFLY_API_TOKEN=${FIREFLY_API_TOKEN}
+      - CORS_ORIGINS=${CORS_ORIGINS}
+      - APP_URL=${APP_URL}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_API_URL=https://api.openai.com/v1
+      - OPENAI_MODEL=${OPENAI_MODEL}
+      - NODE_ENV=production
+      - PORT=3000
+    networks:
+      - app-net
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+networks:
+  app-net:
+    external: true

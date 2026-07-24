@@ -1,0 +1,135 @@
+{
+  acme_dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+}
+
+*.gorgejara.com {
+  tls {
+    dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+  }
+
+  @garage host car.gorgejara.com
+  handle @garage {
+    reverse_proxy 192.168.1.171:8686
+  }
+
+  @otto host otto.gorgejara.com
+  handle @otto {
+    reverse_proxy otter-otterwiki-1:80
+  }
+
+  @home host home.gorgejara.com
+  handle @home {
+    reverse_proxy homarr:7575
+  }
+  
+  @toolbox host toolbox.gorgejara.com
+  handle @toolbox {
+    reverse_proxy toolbox-for-firefly-iii:3000
+  }
+
+  @owl host owl.gorgejara.com
+  handle @owl {
+    reverse_proxy kitchenowl-front-1:80
+    encode gzip
+    header {
+      x-Frame-Options "SAMEORIGIN"
+      X-XSS-Protection "1;mode=block"
+      X-Content-Type-Options "nosniff"
+      Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+      Referrer-Policy "strict-origin-when-cross-origin"
+    }
+}
+
+  @done host done.gorgejara.com
+  handle @done {
+    reverse_proxy 192.168.1.171:2021 {
+      header_up Host {host}
+      header_up X-Real-IP {remote_host}
+      header_up X-Forwarded-For {remote_host}
+      header_up X-Forwarded-Proto {scheme}
+    }
+  }
+
+  @fire host fire.gorgejara.com
+  handle @fire {
+    reverse_proxy firefly-core:8080
+  }
+
+  @fire-import host fire-import.gorgejara.com
+  handle @fire-import {
+    reverse_proxy firefly-importer:8080
+  }
+
+  @filerun host drive.gorgejara.com
+  handle @filerun {
+    reverse_proxy filerun-web-1:80
+  }
+
+  @viki host viki.gorgejara.com
+  handle @viki {
+    reverse_proxy viki-vikunja-1:3456
+  }
+
+  @syncthing host sync.gorgejara.com 
+  handle @syncthing {
+    reverse_proxy syncthing:8384 {
+      header_up Host {upstream_hostport}
+    }
+  }
+  
+  @haos host haos.gorgejara.com
+  handle @haos {
+    reverse_proxy 192.168.1.161:8123 {
+      header_up Host {upstream_hostport}
+      header_up X-Real-IP {remote_host}
+      header_up X-Forwarded-for {remote_host}
+      header_up X-Forwarded-Proto {scheme}
+    } 
+  }
+
+  @immich host immich.gorgejara.com
+  handle @immich {
+    reverse_proxy immich_server:2283
+  }
+
+  @changedetection host cdio.gorgejara.com
+  handle @changedetection {
+    reverse_proxy 192.168.1.156:5000
+  }
+
+  @prox host prox.gorgejara.com
+  handle @prox {
+    reverse_proxy 192.168.1.158:8006 {
+      transport http {
+        tls_insecure_skip_verify
+      }
+    }
+  }
+
+  @adguard host adguard.gorgejara.com
+  handle @adguard {
+    reverse_proxy 192.168.1.159
+  }
+
+  @vault host vaultwarden.gorgejara.com
+  handle @vault {
+    reverse_proxy vaultwarden
+  }
+
+  @gitea host gitea.gorgejara.com
+  handle @gitea {
+    reverse_proxy 192.168.1.170:3000
+  }
+
+  @goals host goals.gorgejara.com
+  handle @goals {
+    reverse_proxy 192.168.1.201:8080
+  }
+}
+
+gorgejara.com {
+  root * /usr/share/caddy
+  file_server
+  encode gzip
+}
+

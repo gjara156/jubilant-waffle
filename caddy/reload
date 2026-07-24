@@ -1,0 +1,6 @@
+#!/bin/bash
+echo "Capturing caddy container ID"
+caddy_container_id=$(docker ps | grep caddy | awk '{print $1;}')
+
+echo "Reloading caddy file within container"
+docker exec -w /etc/caddy $caddy_container_id caddy reload

@@ -1,0 +1,95 @@
+services:
+  firefly-db:
+    image: mariadb:10.6
+    container_name: firefly-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${FIREFLY_DB}
+      MYSQL_USER: ${FIREFLY_DB_USER}
+      MYSQL_PASSWORD: ${FIREFLY_DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${FIREFLY_DB_ROOT_PASSWORD}
+    volumes:
+      - /mnt/slim/firefly/db:/var/lib/mysql
+    networks: [app-net]
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  firefly:
+    image: fireflyiii/core:latest
+    container_name: firefly-core
+    restart: unless-stopped
+    environment:
+      TZ: ${TZ}
+      APP_KEY: ${APP_KEY}
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_URL: https://fire.gorgejara.com
+      TRUSTED_PROXIES: "**"
+      DB_CONNECTION: mysql
+      DB_HOST: firefly-db
+      DB_PORT: "3306"
+      DB_DATABASE: ${FIREFLY_DB}
+      DB_USERNAME: ${FIREFLY_DB_USER}
+      DB_PASSWORD: ${FIREFLY_DB_PASSWORD}
+      STATIC_CRON_TOKEN: ${STATIC_CRON_TOKEN}
+      ALLOW_WEBHOOKS: ${ALLOW_WEBHOOKS}
+      SITE_OWNER: ${SITE_OWNER}
+      DEFAULT_LANGUAGE: ${DEFAULT_LANGUAGE}
+      MAIL_MAILER: ${MAIL_MAILER}
+      MAIL_HOST: ${MAIL_HOST}
+      MAIL_PORT: ${MAIL_PORT}
+      MAIL_FROM: ${MAIL_FROM}
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      MAIL_ENCRYPTION: ${MAIL_ENCRYPTION}
+    volumes:
+      - /mnt/slim/firefly/uploads:/var/www/html/storage/upload
+    depends_on:
+      firefly-db:
+        condition: service_healthy
+    networks: [app-net]
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "sh -c '(: </dev/tcp/127.0.0.1/8080) 2>/dev/null || (command -v curl >/dev/null && curl -fsS http://127.0.0.1:8080 >/dev/null)'",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 40s
+
+  cron:
+    image: alpine
+    container_name: firefly-cron
+    restart: unless-stopped
+    env_file: .env
+    command: >
+      sh -c "
+      apk add --no-cache tzdata curl &&
+      ln -sf /usr/share/zoneinfo/${TZ} /etc/localtime &&
+      echo '0 3 * * * curl -fsS http://firefly:8080/api/v1/cron/${STATIC_CRON_TOKEN} >/proc/1/fd/1 2>/proc/1/fd/2' | crontab - &&
+      crond -f -L /dev/stdout"
+    depends_on:
+      firefly:
+        condition: service_healthy
+    networks: [app-net]
+
+  importer:
+    image: fireflyiii/data-importer:latest
+    container_name: firefly-importer
+    restart: unless-stopped
+    env_file: .importer.env
+    volumes:
+      - /mnt/slim/firefly/importer:/var/www/html/storage/uploads
+    depends_on:
+      firefly:
+        condition: service_healthy
+    networks: [app-net]
+
+networks:
+  app-net:
+    external: true

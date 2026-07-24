@@ -1,0 +1,19 @@
+services:
+  vikunja:
+    image: vikunja/vikunja:2.3.0
+    environment:
+      VIKUNJA_SERVICE_PUBLICURL: https://viki.gorgejara.com/
+      VIKUNJA_SERVICE_SECRET: bde87cb1b7f935326e552ea8c008892df6dce51988ab2048e6888d1c4436ea5b
+      VIKUNJA_DATABASE_PATH: /db/vikunja.db
+    ports:
+      - 127.0.0.1:3456:3456
+    volumes:
+      - /mnt/slim/viki/files:/app/vikunja/files
+      - /mnt/slim/viki/db:/db
+    restart: unless-stopped
+    networks:
+      - app-net
+
+networks:
+  app-net:
+    external: true

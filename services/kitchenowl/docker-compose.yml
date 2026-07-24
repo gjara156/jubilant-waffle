@@ -1,0 +1,29 @@
+version: "3"
+services:
+  front:
+    image: tombursch/kitchenowl-web:latest
+    restart: unless-stopped
+    # environment:
+    #   - BACK_URL=back:5000 # Change this if you rename the containers
+    ports:
+      - "8011:80"
+    depends_on:
+      - back
+    networks:
+      - app-net
+  back:
+    image: tombursch/kitchenowl-backend:latest
+    restart: unless-stopped
+    environment:
+      - JWT_SECRET_KEY=${JWT_KEY}
+    volumes:
+      - kitchenowl_data:/data
+    networks:
+      - app-net
+
+volumes:
+  kitchenowl_data:
+
+networks:
+  app-net:
+    external: true
