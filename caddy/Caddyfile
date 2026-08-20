@@ -29,7 +29,7 @@
   
   @haos host haos.gorgejara.com
   handle @haos {
-    reverse_proxy 192.168.1.161:8123 {
+    reverse_proxy haos.home.arpa:8123 {
       header_up Host {upstream_hostport}
       header_up X-Real-IP {remote_host}
       header_up X-Forwarded-for {remote_host}

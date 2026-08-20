@@ -13,9 +13,6 @@ services:
       - $PWD/site:/srv
       - caddy_data:/data
       - caddy_config:/config
-    dns:
-      - 1.1.1.1
-      - 1.0.0.1
     environment:
       - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
     networks:
