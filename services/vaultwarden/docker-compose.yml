@@ -7,7 +7,7 @@ services:
       - .env
     command: /start.sh
     volumes:
-      - /mnt/app-data/vaultwarden:/data
+      - /mnt/slim/vaultwarden:/data
     ports:
       - "9010:80"
     healthcheck:

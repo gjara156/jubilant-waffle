@@ -7,16 +7,6 @@
     dns cloudflare {env.CLOUDFLARE_API_TOKEN}
   }
 
-  @done host done.gorgejara.com
-  handle @done {
-    reverse_proxy 192.168.1.171:2021 {
-      header_up Host {host}
-      header_up X-Real-IP {remote_host}
-      header_up X-Forwarded-For {remote_host}
-      header_up X-Forwarded-Proto {scheme}
-    }
-  }
-
   @fire host fire.gorgejara.com
   handle @fire {
     reverse_proxy firefly-core:8080
@@ -29,7 +19,7 @@
   
   @haos host haos.gorgejara.com
   handle @haos {
-    reverse_proxy haos.home.arpa:8123 {
+    reverse_proxy 192.168.1.174:8123 {
       header_up Host {upstream_hostport}
       header_up X-Real-IP {remote_host}
       header_up X-Forwarded-for {remote_host}
@@ -51,11 +41,6 @@
   @vault host vaultwarden.gorgejara.com
   handle @vault {
     reverse_proxy vaultwarden
-  }
-
-  @goals host goals.gorgejara.com
-  handle @goals {
-    reverse_proxy 192.168.1.201:8080
   }
 }
 
