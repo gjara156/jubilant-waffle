@@ -7,6 +7,36 @@
     dns cloudflare {env.CLOUDFLARE_API_TOKEN}
   }
 
+  @gitea host git.gorgejara.com
+  handle @gitea {
+    reverse_proxy srrv-02.home.arpa:3000
+  }
+
+  @memos host memos.gorgejara.com
+  handle @memos {
+    reverse_proxy memos:5230
+  }
+
+  @sea host sea.gorgejara.com
+  handle @sea {
+    reverse_proxy rpi-01.home.arpa:80
+  }
+
+  @paper host paper.gorgejara.com
+  handle @paper {
+    reverse_proxy rpi-01.home.arpa:8000
+  }
+
+  @parse host parse.gorgejara.com
+  handle @parse {
+    reverse_proxy statement-parser:8000
+  }
+
+  @wiki host wiki.gorgejara.com
+  handle @wiki {
+    reverse_proxy bookstack
+  }
+  
   @fire host fire.gorgejara.com
   handle @fire {
     reverse_proxy firefly-core:8080

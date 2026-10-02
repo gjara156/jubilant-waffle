@@ -1,0 +1,13 @@
+services:
+  statement-parser:
+    build: .
+    container_name: statement-parser
+    restart: unless-stopped
+    expose:
+      - "8000"
+    networks:
+      - app-net
+
+networks:
+  app-net:
+    external: true

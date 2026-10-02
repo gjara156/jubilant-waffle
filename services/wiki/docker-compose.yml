@@ -1,0 +1,56 @@
+services:
+  bookstack_db:
+    image: lscr.io/linuxserver/mariadb:latest
+    container_name: bookstack_db
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+      - MYSQL_DATABASE=bookstackapp
+      - MYSQL_USER=bookstack
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - /mnt/slim/bookstack/db:/config
+    networks:
+      - wiki-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
+
+  bookstack:
+    image: lscr.io/linuxserver/bookstack:latest
+    container_name: bookstack
+    restart: unless-stopped
+    depends_on:
+      bookstack_db:
+        condition: service_healthy
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+      - APP_URL=https://wiki.gorgejara.com
+      - DB_HOST=bookstack_db
+      - DB_DATABASE=bookstackapp
+      - DB_USERNAME=bookstack
+      - DB_PASSWORD=${DB_PASSWORD}
+      - APP_KEY=${APP_KEY}
+    # LEARN: renamed DB_USER -> DB_USERNAME and DB_PASS -> DB_PASSWORD to match
+    # what this specific image's init script actually substitutes into the
+    # .env template (confirmed by the template file itself showing
+    # DB_USERNAME/DB_PASSWORD as the real key names). Also dropped DB_PORT --
+    # this image doesn't use it; it assumes the standard 3306 on DB_HOST.
+    volumes:
+      - /mnt/slim/bookstack/app:/config
+    networks:
+      - wiki-net
+      - app-net
+
+networks:
+  wiki-net:
+  app-net:
+    external: true

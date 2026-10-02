@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Statement Parser</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 32rem; margin: 4rem auto; padding: 0 1rem; }
+    h1 { font-size: 1.25rem; }
+    form { display: flex; flex-direction: column; gap: 1rem; }
+    button { padding: 0.6rem 1rem; font-size: 1rem; cursor: pointer; }
+    #status { color: #b00020; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <h1>Ally Statement &rarr; CSV</h1>
+  <form id="upload-form">
+    <input type="file" name="statement" accept="application/pdf" required>
+    <button type="submit">Parse statement</button>
+  </form>
+  <p id="status"></p>
+
+  <script>
+    // LEARN: a plain <form method="post" enctype="multipart/form-data">
+    // pointed at /parse would work too and is simpler -- but the browser
+    // then navigates to /parse directly, so a 4xx error renders as a raw
+    // error page instead of staying on this form. Handling the submit
+    // with fetch() lets us keep the user on this page and show the error
+    // text inline. TODO(you): if you'd rather keep this dead simple and
+    // don't care about that polish, delete this script and use a plain
+    // form submit instead -- fewer moving parts, one less thing to debug.
+    const form = document.getElementById('upload-form');
+    const status = document.getElementById('status');
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      status.textContent = 'Parsing...';
+
+      const response = await fetch('/parse', {
+        method: 'POST',
+        body: new FormData(form),
+      });
+
+      if (!response.ok) {
+        status.textContent = await response.text();
+        return;
+      }
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'statement_export.zip';
+      a.click();
+      URL.revokeObjectURL(url);
+      status.textContent = '';
+      form.reset();
+    });
+  </script>
+</body>
+</html>
