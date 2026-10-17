@@ -9,7 +9,7 @@
 
   @gitea host git.gorgejara.com
   handle @gitea {
-    reverse_proxy srrv-02.home.arpa:3000
+    reverse_proxy SRV01.home.arpa:3000
   }
 
   @memos host memos.gorgejara.com
@@ -19,7 +19,7 @@
 
   @sea host sea.gorgejara.com
   handle @sea {
-    reverse_proxy rpi-01.home.arpa:80
+    reverse_proxy srv01.home.arpa:80
   }
 
   @paper host paper.gorgejara.com
@@ -39,7 +39,7 @@
   
   @fire host fire.gorgejara.com
   handle @fire {
-    reverse_proxy firefly-core:8080
+    reverse_proxy SRV01.home.arpa:8181
   }
 
   @fire-import host fire-import.gorgejara.com
@@ -49,7 +49,7 @@
   
   @haos host haos.gorgejara.com
   handle @haos {
-    reverse_proxy 192.168.1.174:8123 {
+    reverse_proxy 192.168.1.145:8123 {
       header_up Host {upstream_hostport}
       header_up X-Real-IP {remote_host}
       header_up X-Forwarded-for {remote_host}
@@ -59,7 +59,7 @@
 
   @immich host immich.gorgejara.com
   handle @immich {
-    reverse_proxy immich_server:2283
+    reverse_proxy SRV01.home.arpa:2283
   }
 
 
@@ -70,7 +70,7 @@
 
   @vault host vaultwarden.gorgejara.com
   handle @vault {
-    reverse_proxy vaultwarden
+    reverse_proxy SRV01.home.arpa:9010
   }
 }
 
