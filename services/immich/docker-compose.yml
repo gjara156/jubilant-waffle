@@ -23,7 +23,9 @@ services:
     env_file:
       - .env
     networks:
-      - app-net
+      - immich-net
+    ports:
+      - 192.168.1.177:2283:2283
     depends_on:
       - redis
       - database
@@ -45,7 +47,7 @@ services:
       - .env
     restart: always
     networks:
-      - app-net
+      - immich-net
     healthcheck:
       disable: false
 
@@ -53,7 +55,7 @@ services:
     container_name: immich_redis
     image: docker.io/valkey/valkey:8-bookworm@sha256:42cba146593a5ea9a622002c1b7cba5da7be248650cbb64ecb9c6c33d29794b1
     networks:
-      - app-net
+      - immich-net
     healthcheck:
       test: redis-cli ping || exit 1
     restart: always
@@ -73,11 +75,11 @@ services:
     shm_size: 128mb
     restart: always
     networks:
-      - app-net
+      - immich-net
 
 volumes:
   model-cache:
 
 networks:
-  app-net:
+  immich-net:
     external: true

@@ -9,15 +9,15 @@ services:
     volumes:
       - /mnt/slim/vaultwarden:/data
     ports:
-      - "9010:80"
+      - "192.168.1.177:9010:80"
     healthcheck:
       test: ["CMD", "/healthcheck.sh"]
       interval: 60s
       timeout: 10s
       retries: 5
     networks:
-      - app-net
+      - vault-net
 
 networks:
-  app-net:
+  vault-net:
     external: true
