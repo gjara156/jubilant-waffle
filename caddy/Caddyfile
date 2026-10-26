@@ -7,6 +7,11 @@
     dns cloudflare {env.CLOUDFLARE_API_TOKEN}
   }
 
+  @actual host actual.gorgejara.com
+  handle @actual {
+    reverse_proxy SRV01.home.arpa:5006
+  }
+
   @gitea host git.gorgejara.com
   handle @gitea {
     reverse_proxy SRV01.home.arpa:3000
