@@ -1,2 +1,5 @@
 .env
 *.env
+
+/home/gjara/docker/service2/gitea/postgres
+/home/gjara/docker/service2/gitea/gitea

@@ -3,8 +3,6 @@ services:
     image: neosmemo/memos:stable
     container_name: memos
     restart: unless-stopped
-    ports:
-      - "5230:5230"
     volumes:
       - /mnt/slim/memos/data:/var/opt/memos
     environment:

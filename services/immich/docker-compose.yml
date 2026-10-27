@@ -24,8 +24,7 @@ services:
       - .env
     networks:
       - immich-net
-    ports:
-      - 192.168.1.177:2283:2283
+      - app-net
     depends_on:
       - redis
       - database
@@ -82,4 +81,6 @@ volumes:
 
 networks:
   immich-net:
+    external: true
+  app-net:
     external: true
